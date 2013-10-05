@@ -2,12 +2,20 @@ require 'excel'
 
 class ExcelBook < Excel
 	def initialize(path)
-		super(path)
-		@book_hash = book_to_json_hash(path)
+		if path
+			super(path)
+			@book_hash = book_to_json_hash(path)
+		end
+	end
+
+	def self.init_with_json(book_json)
+		excel_book = ExcelBook.new(nil)
+		excel_book.book_hash = book_json
+		return excel_book
 	end
 
 	def -(other_book)
-
+		return ExcelBook.init_with_json(get_diff_book(other_book))
 	end
 
 	def save_json
@@ -18,8 +26,43 @@ class ExcelBook < Excel
 
 	end
 
+	attr_accessor :book_hash
 
 	private
+		def get_diff_book(other_book)
+			diff_book_hash = Hash.new
+			other_book_hash = other_book.book_hash
+
+			@book_hash.each do |sheet_name, rows|
+				other_sheet_rows = other_book_hash[sheet_name]
+				tmp_sheet_hash = Hash.new
+				tmp_sheet_hash[sheet_name] = Array.new
+
+				if other_sheet_rows
+					# 同じ名前のシートが存在する場合
+					diff_sheet = get_diff_sheet(sheet_name, rows, other_sheet_rows)
+					diff_book_hash[sheet_name] = diff_sheet unless diff_sheet.size == 0
+				else
+					# Todo: 新しいシートが存在する場合
+				end
+			end
+
+			return diff_book_hash
+		end
+
+		# 異なる箇所の行配列を返す
+		def get_diff_sheet(sheet_name, self_sheet_rows, other_sheet_rows)
+			diff_array = Array.new
+
+			self_sheet_rows.each_with_index do |row, index|
+				if row != other_sheet_rows[index]
+					diff_array << row
+				end
+			end
+
+			return diff_array
+		end
+
 		def book_to_json_hash(path)
 			book = Spreadsheet.open(path)
 			book_hash = Hash.new
@@ -30,7 +73,7 @@ class ExcelBook < Excel
 				book_hash[sheet.name] = sheet_to_json_array(sheet)
 				sheet_count += 1
 			end
-debugger
+
 			return book_hash
 		end
 
