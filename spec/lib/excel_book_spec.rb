@@ -3,9 +3,9 @@ require 'excel_book'
 
 describe 'lib/excel_book' do
 	before do
-		@old_book = ExcelBook.new('public/spread_test.xls')
-		@new_book = ExcelBook.new('public/spread_test_2.xls')
-		@new_add_sheet_book = ExcelBook.new('public/spread_test_add_sheet.xls')
+		@old_book = ExcelBook.new('public/test_data/spread_test.xls')
+		@new_book = ExcelBook.new('public/test_data/spread_test_2.xls')
+		@new_add_sheet_book = ExcelBook.new('public/test_data/spread_test_add_sheet.xls')
 	end
 
 	context "to_json method" do

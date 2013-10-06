@@ -6,8 +6,8 @@ class Todo < ActiveRecord::Base
 	end
 
 	def spread_test
-		old_sheet = ExcelBook.new('public/spread_test_zure.xls')
-		new_sheet = ExcelBook.new('public/spread_test_2_zure.xls')
+		old_sheet = ExcelBook.new('public/test_data/spread_test_zure.xls')
+		new_sheet = ExcelBook.new('public/test_data/spread_test_2_zure.xls')
 
 		diff_zure = new_sheet - old_sheet
 		diff_zure.save_json('public/diff_zure.json')

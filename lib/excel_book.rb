@@ -41,6 +41,7 @@ class ExcelBook < Excel
 			return book
 		end
 
+		# sheetにrowsを設定（挿入）する
 		def set_sheet_rows!(sheet, rows)
 			# header行を挿入
 			sheet.row(0).concat(rows.first.keys)
@@ -56,6 +57,7 @@ class ExcelBook < Excel
 			return excel_book
 		end
 
+		# ExcelBookインスタンスを受け取り、差分のHashオブジェクトを返す
 		def get_diff_book(other_book)
 			diff_book_hash = Hash.new
 			other_book_hash = other_book.book_hash
@@ -112,7 +114,7 @@ class ExcelBook < Excel
 			row_array = Array.new #sheet_hash[sheet.name]
 			header_array = sheet.row(first_used_row).to_a
 
-			header_count = 0
+			header_count = first_used_col
 			((first_used_row+1)..first_unused_row-1).each do |row_index|
 				row = sheet.row(row_index)
 				row_array << Hash.new
@@ -121,7 +123,7 @@ class ExcelBook < Excel
 					header_count += 1
 				end
 
-				header_count = 0
+				header_count = first_used_col
 			end
 
 			return row_array

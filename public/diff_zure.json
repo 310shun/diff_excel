@@ -1,1 +1,1 @@
-{"Sheet1":[{"id":3,"todo":"yasu","due":2050}],"takos":[{"":2,"id":"wee","name":"invalid"},{"":3,"id":"qqq","name":"valid"}]}
+{"Sheet1":[{"id":3,"todo":"yasu","due":2050}],"takos":[{"id":2,"name":"wee","status":"invalid"},{"id":3,"name":"qqq","status":"valid"}]}
