@@ -8,27 +8,54 @@ class ExcelBook < Excel
 		end
 	end
 
-	def self.init_with_json(book_json)
-		excel_book = ExcelBook.new(nil)
-		excel_book.book_hash = book_json
-		return excel_book
-	end
-
 	def -(other_book)
 		return ExcelBook.init_with_json(get_diff_book(other_book))
 	end
 
-	def save_json
-
+	def to_json
+		return @book_hash.to_json
 	end
 
-	def save_excel
+	def save_json(path)
+		File.write(path, @book_hash.to_json)
+	end
 
+	def save_excel(path)
+		saving_excel = get_spreadsheet
+		saving_excel.write(path)
 	end
 
 	attr_accessor :book_hash
 
 	private
+		# @book_hashから、Spreadsheet::Workbookインスタンスを生成、それを返す
+		def get_spreadsheet
+			book = Spreadsheet::Workbook.new
+
+			@book_hash.each do |sheet_name, rows|
+				sheet = book.create_worksheet
+				sheet.name = sheet_name
+				set_sheet_rows!(sheet, rows)
+			end
+
+			return book
+		end
+
+		def set_sheet_rows!(sheet, rows)
+			# header行を挿入
+			sheet.row(0).concat(rows.first.keys)
+
+			rows.each_with_index do |row, row_index|
+				sheet.row(row_index+1).concat(row.values)
+			end
+		end
+
+		def self.init_with_json(book_json)
+			excel_book = ExcelBook.new(nil)
+			excel_book.book_hash = book_json
+			return excel_book
+		end
+
 		def get_diff_book(other_book)
 			diff_book_hash = Hash.new
 			other_book_hash = other_book.book_hash
@@ -43,7 +70,8 @@ class ExcelBook < Excel
 					diff_sheet = get_diff_sheet(sheet_name, rows, other_sheet_rows)
 					diff_book_hash[sheet_name] = diff_sheet unless diff_sheet.size == 0
 				else
-					# Todo: 新しいシートが存在する場合
+					# 新しいシートが存在する場合
+					diff_book_hash[sheet_name] = rows
 				end
 			end
 
